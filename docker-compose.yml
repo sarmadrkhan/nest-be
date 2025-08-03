@@ -1,0 +1,27 @@
+services:
+  dev-db:
+    image: postgres:17
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nest_be_dev
+    volumes:
+      - ./docker/postgres/data:/var/lib/postgresql/data
+    networks:
+      - nest-be-network
+  test-db:
+    image: postgres:17
+    ports:
+      - "5436:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nest_be_test
+    volumes:
+      - ./docker/postgres/test-data:/var/lib/postgresql/data
+    networks:
+      - nest-be-network
+networks:
+  nest-be-network:
