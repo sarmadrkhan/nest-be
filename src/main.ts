@@ -24,6 +24,7 @@ async function bootstrap() {
   await app.listen(port);
   if (process.env.NODE_ENV === 'development') {
     await open(`http://localhost:${port}/api/docs`);
+    console.log(`Swagger UI is available at http://localhost:${port}/api/docs`);
   }
 }
 bootstrap();
