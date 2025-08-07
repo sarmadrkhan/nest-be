@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: pw
       POSTGRES_DB: ddb
     volumes:
-      - ./docker/postgres/data:/var/lib/postgresql/data
+      - dev-db-data:/var/lib/postgresql/data
     networks:
       - nest-be-network
   test-db:
@@ -22,8 +22,12 @@ services:
       POSTGRES_PASSWORD: pw
       POSTGRES_DB: tdb
     volumes:
-      - ./docker/postgres/test-data:/var/lib/postgresql/data
+      - test-db-data:/var/lib/postgresql/data
     networks:
       - nest-be-network
 networks:
   nest-be-network:
+
+volumes: # Named volumes for persistence and cleaning up using -v flag
+  dev-db-data:
+  test-db-data:
