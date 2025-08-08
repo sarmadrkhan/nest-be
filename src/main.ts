@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import open from 'open';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,9 +22,15 @@ async function bootstrap() {
 
   const port = configService.get('PORT') || 2026;
 
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
+
   await app.listen(port);
   if (process.env.NODE_ENV === 'development') {
-    await open(`http://localhost:${port}/api/docs`);
+    // await open(`http://localhost:${port}/api/docs`);
     console.log(`Swagger UI is available at http://localhost:${port}/api/docs`);
   }
 }
