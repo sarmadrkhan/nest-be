@@ -9,9 +9,8 @@ export class AuthController {
 
   @Post('signup')
   @ApiBody({ type: AuthDto })
-  signup(@Body() body: AuthDto) {
-    console.log({body});
-    return this.authService.signup();
+  async signup(@Body() body: AuthDto) {
+    return this.authService.signup(body);
   }
 
   @Post('signin')

@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import open from 'open';
 import { ValidationPipe } from '@nestjs/common';
+import { PrismaExceptionFilter } from './common/filters';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -27,7 +28,7 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
-
+  app.useGlobalFilters(new PrismaExceptionFilter());
   await app.listen(port);
   if (process.env.NODE_ENV === 'development') {
     // await open(`http://localhost:${port}/api/docs`);
