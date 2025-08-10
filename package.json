@@ -5,12 +5,11 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
-  "scripts": {
-    "prisma:dev:deploy": "prisma migrate deploy",
-
+  "scripts": {  
     "db:dev:rm": "docker compose down -v dev-db",
     "db:dev:up": "docker compose up -d dev-db",
-    "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && sleep 1 && npm run prisma:dev:deploy",
+    "db:dev:wait": "docker compose exec dev-db sh -c 'until pg_isready -U postgres; do sleep 1; done'",
+    "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && npm run db:dev:wait && prisma migrate deploy",
 
     "db:test:rm": "docker compose down -v test-db",
     "db:test:up": "docker compose up -d test-db",
