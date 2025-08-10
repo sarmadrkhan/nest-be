@@ -9,6 +9,7 @@ services:
       POSTGRES_PASSWORD: pw
       POSTGRES_DB: ddb
       PGUSER: postgres
+      PGDATABASE: ddb
     volumes:
       - dev-db-data:/var/lib/postgresql/data
     networks:
@@ -23,6 +24,7 @@ services:
       POSTGRES_PASSWORD: pw
       POSTGRES_DB: tdb
       PGUSER: postgres
+      PGDATABASE: tdb
     volumes:
       - test-db-data:/var/lib/postgresql/data
     networks:
