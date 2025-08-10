@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import open from 'open';
 import { ValidationPipe } from '@nestjs/common';
 import { PrismaExceptionFilter } from './common/filters';
 
@@ -30,9 +29,6 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new PrismaExceptionFilter());
   await app.listen(port);
-  if (process.env.NODE_ENV === 'development') {
-    // await open(`http://localhost:${port}/api/docs`);
-    console.log(`Swagger UI is available at http://localhost:${port}/api/docs`);
-  }
+  console.log(`Swagger UI is available at http://localhost:${port}/api/docs`);
 }
 bootstrap();

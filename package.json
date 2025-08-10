@@ -5,16 +5,14 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
-  "scripts": {  
+  "scripts": {
     "db:dev:rm": "docker compose down -v dev-db",
     "db:dev:up": "docker compose up -d dev-db",
     "db:dev:wait": "docker compose exec dev-db sh -c 'until pg_isready -U postgres; do sleep 1; done'",
     "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && npm run db:dev:wait && prisma migrate deploy",
-
     "db:test:rm": "docker compose down -v test-db",
     "db:test:up": "docker compose up -d test-db",
     "db:test:restart": "npm run db:test:rm && npm run db:test:up",
-
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -39,7 +37,6 @@
     "argon2": "^0.43.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
-    "open": "^10.2.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
