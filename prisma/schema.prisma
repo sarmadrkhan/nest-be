@@ -17,5 +17,23 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  tokens    RefreshToken[]
   @@map("users")
+}
+
+model RefreshToken {
+  id                String   @id @default(uuid())
+  tokenHash         String
+  
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String
+  
+  createdAt         DateTime @default(now())
+  expiresAt         DateTime
+  revokedAt         DateTime?
+  replacedByTokenId String?
+  updatedAt         DateTime @updatedAt
+
+  @@index([userId])
+  @@map("refresh_tokens")
 }
