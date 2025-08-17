@@ -1,7 +1,10 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
+import { JwtGuard, JwtRefreshGuard } from './guard';
+import { GetUser } from './decorator';
+import { RefreshPayload } from './type';
 
 @Controller('auth')
 export class AuthController {
@@ -18,5 +21,27 @@ export class AuthController {
   @ApiBody({ type: AuthDto })
   async signin(@Body() body: AuthDto) {
     return this.authService.signin(body);
+  }
+
+  @UseGuards(JwtRefreshGuard)
+  @Post('refresh')
+  @ApiBearerAuth()
+  async refresh(@GetUser() payload: RefreshPayload) {
+    return this.authService.refreshTokens(payload);
+
+  }
+
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  @Post('logout')
+  async logout(@GetUser('sub') userId: string, @GetUser('jti') jti: string) {
+    return this.authService.logoutCurrent(jti, userId);
+  }
+
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
+  @Post('logout-all')
+  async logoutAll(@GetUser('sub') userId: string) {
+    return this.authService.logoutAll(userId);
   }
 }
