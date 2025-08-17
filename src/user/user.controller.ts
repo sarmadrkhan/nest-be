@@ -11,7 +11,8 @@ export class UserController {
   
   @Get('me')
   @ApiOperation({ summary: 'Get current user profile' })
-  getMe(@GetUser() user: User) {
+  getMe(@GetUser() user: User, @GetUser('email') email: string) {
+    console.log('Current user email:', email);
     return user;
   }
 
