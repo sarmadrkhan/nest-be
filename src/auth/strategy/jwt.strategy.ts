@@ -10,10 +10,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     config: ConfigService,
     private readonly prisma: PrismaService,
   ) {
-    const jwtSecret = config.get('JWT_SECRET');
+    const jwtSecret = config.get('JWT_ACCESS_SECRET');
 
     if (!jwtSecret) {
-      throw new Error('JWT_SECRET is not defined in the .env file');
+      throw new Error('JWT_ACCESS_SECRET is not defined in the .env file');
     }
 
     super({
@@ -22,12 +22,12 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: { sub: string; email: string }) {
+  async validate(payload: { sub: string; email: string, jti: string }) {
     const user = await this.prisma.user.findUniqueOrThrow({
       where: { id: payload.sub },
     });
 
     const { hash, ...safeUser } = user;
-    return safeUser;
+    return {...safeUser, sub: payload.sub, email: payload.email, jti: payload.jti   };
   }
 }
