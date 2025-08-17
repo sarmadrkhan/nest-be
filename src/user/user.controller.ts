@@ -1,6 +1,7 @@
-import { Controller, Get, UseGuards } from "@nestjs/common";
+import { Controller, Get, Req, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
+import { Request } from "express";
 
 @Controller('users')
 export class UserController {
@@ -9,7 +10,8 @@ export class UserController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get current user profile' })
   @Get('me')
-  getMe() {
+  getMe(@Req () req: Request) {
+    console.log({ user: req.user });
     return { message: "User profile data" };
   }
 }
