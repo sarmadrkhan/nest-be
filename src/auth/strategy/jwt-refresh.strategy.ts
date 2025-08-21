@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { RefreshPayload } from '../type';
+import { ERROR_MESSAGES } from 'src/common/constants';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
@@ -10,7 +11,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
     const refreshSecret = config.get('JWT_REFRESH_SECRET');
 
     if (!refreshSecret) {
-      throw new Error('JWT_REFRESH_SECRET is not defined in the .env file');
+      throw new Error(ERROR_MESSAGES.JWT.MISSING_SECRET);
     }
 
     super({
@@ -22,7 +23,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
 
   async validate(req: any, payload: RefreshPayload) {
     const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
-    if (!token) throw new Error('Refresh token is missing');
+    if (!token) throw new Error(ERROR_MESSAGES.REFRESH_TOKEN.MISSING);
 
     return {...payload, refreshToken: token};
   }

@@ -5,6 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPair, RefreshPayload } from './type';
+import { ERROR_MESSAGES, SEVEN_DAYS } from 'src/common/constants';
 
 @Injectable()
 export class AuthService {
@@ -24,13 +25,13 @@ export class AuthService {
     const refreshTtl = this.config.get('JWT_REFRESH_TTL');
 
     if (!accessSecret || !refreshSecret) {
-      throw new Error('JWT_SECRET or JWT_REFRESH_SECRET is not defined in the .env file');
+      throw new Error(ERROR_MESSAGES.JWT.MISSING_SECRET);
     }
      if (!accessTtl || !refreshTtl) {
-      throw new Error('JWT_ACCESS_TTL or JWT_REFRESH_TTL is not defined in the .env file');
+      throw new Error(ERROR_MESSAGES.JWT.MISSING_TTL);
     }
 
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + SEVEN_DAYS);
     const refreshRow = await this.prisma.refreshToken.create({
       data: {
         userId,
@@ -79,7 +80,7 @@ export class AuthService {
     const passwordMatches = await argon.verify(user.hash, body.password);
     
     if (!passwordMatches) {
-      throw new ForbiddenException('Invalid credentials');
+      throw new ForbiddenException(ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS);
     }
 
     return this.issueTokens(user.id, user.email);
@@ -87,18 +88,18 @@ export class AuthService {
 
   async refreshTokens(payload: RefreshPayload): Promise<JwtPair> {
     
-    if (!payload.refreshToken) throw new UnauthorizedException('Refresh token is missing');
+    if (!payload.refreshToken) throw new UnauthorizedException(ERROR_MESSAGES.REFRESH_TOKEN.MISSING);
 
     const dbRow = await this.prisma.refreshToken.findUniqueOrThrow({
       where: { id: payload.jti }
     });
     
-    if (!dbRow || dbRow.userId !== payload.sub) throw new UnauthorizedException('Invalid refresh token');
-    if (dbRow.revokedAt) throw new UnauthorizedException('Refresh token has been revoked');
-    if (dbRow.expiresAt < new Date()) throw new UnauthorizedException('Refresh token has expired');
+    if (!dbRow || dbRow.userId !== payload.sub) throw new UnauthorizedException(ERROR_MESSAGES.REFRESH_TOKEN.INVALID);
+    if (dbRow.revokedAt) throw new UnauthorizedException(ERROR_MESSAGES.REFRESH_TOKEN.REVOKED);
+    if (dbRow.expiresAt < new Date()) throw new UnauthorizedException(ERROR_MESSAGES.REFRESH_TOKEN.EXPIRED);
 
     const matches = await argon.verify(dbRow.tokenHash, payload.refreshToken);
-    if (!matches) throw new UnauthorizedException('Refresh token mismatch');
+    if (!matches) throw new UnauthorizedException(ERROR_MESSAGES.REFRESH_TOKEN.MISMATCH);
 
     // Rotate: Revoke old token and issue new ones
     const newJwtPair = await this.issueTokens(payload.sub, payload.email);

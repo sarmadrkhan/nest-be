@@ -4,21 +4,22 @@ import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { PrismaExceptionFilter } from './common/filters';
+import { SWAGGER_CONSTANTS } from './common/constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix(SWAGGER_CONSTANTS.API_PREFIX);
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('NestJS API')
-    .setDescription('API documentation for the application')
-    .setVersion('1.0')
+    .setTitle(SWAGGER_CONSTANTS.TITLE)
+    .setDescription(SWAGGER_CONSTANTS.DESCRIPTION)
+    .setVersion(SWAGGER_CONSTANTS.VERSION)
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api/docs', app, document);
+  SwaggerModule.setup(SWAGGER_CONSTANTS.DOCS_PATH, app, document);
 
   const port = configService.get('PORT') || 2026;
 

@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { CRON_TIMERS } from '../constants';
 
 @Injectable()
 export class CleanupService {
   constructor(private prisma: PrismaService) {}
 
-  @Cron('0 * * * * ') // Runs every hour
+  @Cron(CRON_TIMERS.CLEANUP_TOKENS)
   async cleanupTokens() {
     await this.prisma.refreshToken.deleteMany({
       where: {

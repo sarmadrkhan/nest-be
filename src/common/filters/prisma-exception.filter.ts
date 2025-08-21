@@ -1,11 +1,6 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  ConflictException,
-  BadRequestException,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, ConflictException, BadRequestException } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { PRIMSA_EXCEPTIONS } from '../constants';
 
 @Catch(PrismaClientKnownRequestError)
 export class PrismaExceptionFilter implements ExceptionFilter {
@@ -16,14 +11,14 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     let httpException;
 
     switch (exception.code) {
-      case 'P2002':
-        httpException = new ConflictException('Record already exists');
+      case PRIMSA_EXCEPTIONS.CONFLICT.code:
+        httpException = new ConflictException(PRIMSA_EXCEPTIONS.CONFLICT.message);
         break;
-      case 'P2025':
-        httpException = new BadRequestException('Record not found');
+      case PRIMSA_EXCEPTIONS.NOT_FOUND.code:
+        httpException = new BadRequestException(PRIMSA_EXCEPTIONS.NOT_FOUND.message);
         break;
       default:
-        httpException = new BadRequestException('Database error occurred');
+        httpException = new BadRequestException(PRIMSA_EXCEPTIONS.DATABASE_ERROR.message);
         break;
     }
 

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ERROR_MESSAGES } from 'src/common/constants';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -13,7 +14,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     const jwtSecret = config.get('JWT_ACCESS_SECRET');
 
     if (!jwtSecret) {
-      throw new Error('JWT_ACCESS_SECRET is not defined in the .env file');
+      throw new Error(ERROR_MESSAGES.JWT.MISSING_SECRET);
     }
 
     super({
